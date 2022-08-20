@@ -69,17 +69,13 @@ public class DefaultTemplateExcelFiller implements TemplateExcelFiller {
         verifyAndInitParamData(paramData);
 
         for (int rowNum = 0; rowNum <= sheet.getLastRowNum(); rowNum++) {
-            Row curRow = sheet.getRow(rowNum);
-            if (curRow == null) {
-                continue;
-            }
-
-            for (int colNum = 0; colNum < curRow.getLastCellNum(); colNum++) {
-
-                Cell curCell = curRow.getCell(colNum);
-                // 给cell 应用处理
-                this.operateExcelCellHandlerList.forEach(handler -> handler.operate(sheet, curCell, paramData, this.expressionCalculator));
-            }
+            Optional.ofNullable(sheet.getRow(rowNum)).ifPresent(curRow -> {
+                for (int colNum = 0; colNum < curRow.getLastCellNum(); colNum++) {
+                    Optional.ofNullable(curRow.getCell(colNum)).ifPresent(curCell ->
+                            // 给cell 应用处理
+                            this.operateExcelCellHandlerList.forEach(handler -> handler.operate(sheet, curCell, paramData, this.expressionCalculator)));
+                }
+            });
         }
         // 执行 所有的 Excel 的后置处理
         this.operateExcelPostProcessorList.forEach(processor -> processor.operatePostProcess(sheet, paramData, this.expressionCalculator));
