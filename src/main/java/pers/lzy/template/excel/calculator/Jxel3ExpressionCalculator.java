@@ -27,7 +27,6 @@ public class Jxel3ExpressionCalculator implements ExpressionCalculator {
 
 
     private final JxltEngine jxltEngine;
-    // private final JexlEngine jexlEngine;
 
 
     /**
@@ -130,13 +129,7 @@ public class Jxel3ExpressionCalculator implements ExpressionCalculator {
                 minSize = currentSize;
             }
         }
-       /* Object property = jxltEngine.getEngine().getProperty(calculateParam, objExpr);
-        if (!(property instanceof Collection)) {
-            logger.warn("Expression maps are not subclasses of Collection");
-            return new ArrayList<>();
-        }
 
-        return (Collection<?>) property;*/
         return minSizeCollection;
     }
 

@@ -8,10 +8,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * 简单缓存，无超时实现，默认使用{@link WeakHashMap}实现缓存自动清理
- *
+ *	（来自 hutool工具类）
  * @param <K> 键类型
  * @param <V> 值类型
- * @author Looly
  */
 public class SimpleCache<K, V> implements Iterable<Map.Entry<K, V>>, Serializable {
 	private static final long serialVersionUID = 1L;

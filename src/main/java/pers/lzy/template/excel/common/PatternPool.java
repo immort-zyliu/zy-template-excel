@@ -4,9 +4,7 @@ package pers.lzy.template.excel.common;
 import java.util.regex.Pattern;
 
 /**
- * 常用正则表达式集合
- *
- * @author Looly
+ * 常用正则表达式集合(来自hutool工具类)
  */
 public class PatternPool {
 

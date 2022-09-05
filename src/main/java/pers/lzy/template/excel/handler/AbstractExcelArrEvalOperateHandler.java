@@ -158,13 +158,4 @@ public abstract class AbstractExcelArrEvalOperateHandler extends AbstractOperate
         }
     }
 
-    /*  *//**
-     * 确定子类实现的标签
-     *
-     * @return 标签名称
-     *//*
-    @Override
-    protected String determineTagName() {
-        return TagNameConstant.ARR_TAG_NAME;
-    }*/
 }

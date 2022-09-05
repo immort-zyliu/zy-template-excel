@@ -9,10 +9,12 @@ package pers.lzy.template.excel.pojo;
 public class ArrInfo {
 
     private Integer startRow;
+
     /**
      * 数组长度
      */
     private Integer size = 0;
+
     /**
      * 是否需要插入行的标志
      * :true 需要插入
@@ -20,7 +22,9 @@ public class ArrInfo {
     private Boolean insertRowFlag = true;
 
 
-    // 最小列
+    /**
+     * 最小列
+     */
     private Integer minColumnIndex = 0;
 
     /**
