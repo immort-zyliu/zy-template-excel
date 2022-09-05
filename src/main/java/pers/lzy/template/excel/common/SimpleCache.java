@@ -1,5 +1,8 @@
 package pers.lzy.template.excel.common;
 
+import com.sun.istack.internal.NotNull;
+
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
@@ -137,9 +140,8 @@ public class SimpleCache<K, V> implements Iterable<Map.Entry<K, V>>, Serializabl
 	}
 
 	@Override
+	@Nonnull
 	public Iterator<Map.Entry<K, V>> iterator() {
-
-
 		return this.cache.entrySet().iterator();
 	}
 
@@ -156,7 +158,7 @@ public class SimpleCache<K, V> implements Iterable<Map.Entry<K, V>>, Serializabl
 	 * @since 4.5.2
 	 */
 	@FunctionalInterface
-	public static interface Func0<R> {
+	public interface Func0<R> {
 		/**
 		 * 执行函数
 		 *
