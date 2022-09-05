@@ -33,7 +33,8 @@ public class FunctionTest {
     public void before() {
 
         // 构建导出者
-        templateExcelFiller = TemplateExcelFillerFactory.defaultTemplateExcelFillerBuilder()
+        templateExcelFiller = TemplateExcelFillerFactory
+                .defaultTemplateExcelFillerBuilder()
                 .expressionCacheSize(500)
                 .build();
 
@@ -43,10 +44,14 @@ public class FunctionTest {
     public void test() throws IOException, InvalidFormatException {
 
         Map<String, Object> param = initParam();
+
         //获取文件的URL
-        URL url = this.getClass().getClassLoader().getResource("05MyScore_function.xlsx");
+        URL url = this.getClass()
+                .getClassLoader()
+                .getResource("05MyScore_function.xlsx");
         assert url != null;
 
+        // 准备workbook
         Workbook workbook = new XSSFWorkbook(new File(url.getPath()));
         Sheet sheet = workbook.getSheetAt(0);
 
@@ -58,6 +63,11 @@ public class FunctionTest {
         ExcelUtil.writeFile(workbook, new File("C:\\Users\\immortal\\Desktop\\05MyScore_functionxxxx.xlsx"));
     }
 
+    /**
+     * 初始化数据，可以是pojo类，或者是map等。
+     *
+     * @return 准备要填充的数据
+     */
     private Map<String, Object> initParam() {
 
 

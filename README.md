@@ -313,13 +313,109 @@
 
 #### 3.1.1 创建“填充者”
 
+```java
+private TemplateExcelFiller templateExcelFiller;
+
+public void init() {
+
+    // 构建导出者
+    templateExcelFiller = TemplateExcelFillerFactory
+        .defaultTemplateExcelFillerBuilder()
+        // 下面还有很多选项，自己去点。
+        // 不过虽然有很多选项，但是用不到。
+        // 我们都提供了相关的扩展点
+        .expressionCacheSize(500)
+        .build();
+
+}
+
+```
+
 
 
 #### 3.1.2 准备数据与模板
 
+- 准备数据(你的数据可以来自任何地方，下面只是举一个例子而已)
 
+  ```java
+  /**
+    * 初始化数据，可以是pojo类，或者是map等。
+    *
+    * @return 准备要填充的数据
+    */
+  private Map<String, Object> initParam() {
+
+
+      Map<String, Object> res = new HashMap<>();
+      ClassScore classScore = new ClassScore();
+      res.put("classScore", classScore);
+
+      classScore.setName("清华xx附属小学");
+      classScore.setLevel("五年级一班");
+      classScore.setPhone("15032000000");
+
+      List<ClassScore.Score> scoreList = new ArrayList<>();
+      scoreList.add(new ClassScore.Score("张三", 80D, 98D, 30D));
+      scoreList.add(new ClassScore.Score("李四", 70D, 88D, 88D));
+      scoreList.add(new ClassScore.Score("王五", 90D, 61D, 90D));
+      scoreList.add(new ClassScore.Score("赵六", 86D, 78D, 78D));
+
+      classScore.setScore(scoreList);
+      return res;
+
+
+  }
+  ```
+
+
+
+- 准备Excel模板
+
+  ![1662355660079](./assets/1662355660079.png)
 
 #### 3.1.3 使用“填充者”对象填充Excel
+
+调用方法进行填充
+
+```java
+@Test
+public void test() throws IOException, InvalidFormatException {
+
+    Map<String, Object> param = initParam();
+
+    //获取文件的URL
+    URL url = this.getClass()
+        .getClassLoader()
+        .getResource("05MyScore_function.xlsx");
+    assert url != null;
+
+    // 准备workbook
+    Workbook workbook = new XSSFWorkbook(new File(url.getPath()));
+    Sheet sheet = workbook.getSheetAt(0);
+
+
+    // 调用填充者来填充数据
+    templateExcelFiller.fillData(() -> sheet, () -> param);
+
+    // 将Excel 写出去，查看结果
+    ExcelUtil.writeFile(
+        workbook, 
+        new File("C:\\Users\\immortal\\Desktop\\05MyScore_functionxxxx.xlsx")
+    );
+}
+```
+
+
+
+**其实核心代码就是一句：（提供模板的sheet对象和参数对象即可。）**
+
+```java
+templateExcelFiller.fillData(() -> sheet, () -> param);
+// 也可以这样：
+templateExcelFiller.fillData(sheet, param);
+```
+
+
 
 ### 3.2 Spring-Boot 整合
 
@@ -399,11 +495,7 @@
 
 
 
-
-
-
-
-## 5. 联系我
+## 5.联系我
 - `email`:  **zyliu99@foxmail.com**
 
 
@@ -412,7 +504,7 @@
 
 ## 6. 开源协议
 
-
+[Apache 2.0](./LICENSE) © immort-zyliu
 
 
 
