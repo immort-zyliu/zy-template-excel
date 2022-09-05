@@ -380,6 +380,22 @@
 
 ### 4.3 注册全局函数
 
+- 实现下面的接口
+
+  ![1662354373139](./md-image/1662354373139.png)
+
+  示例如下:
+
+  ![1662354471315](./md-image/1662354471315.png)
+
+- 使用SPI机制声明即可
+
+  在classpath下新建文件`/META-INF/services/pers.lzy.template.excel.core.FunctionProvider`，并在文件下填充对应类的全限定类名即可。
+
+  ![1662354674517](./md-image/1662354674517.png)
+
+  ​
+
 
 
 
