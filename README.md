@@ -423,13 +423,11 @@ templateExcelFiller.fillData(sheet, param);
 - 导入pom
 
   ```xml
-   <dependencies>
-       <dependency>
-           <groupId>com.github.immort-zyliu</groupId>
-           <artifactId>zy-template-excel-spring-boot-starter</artifactId>
-           <version>${zy-template-excel-boot.version}</version>
-       </dependency>
-  </dependencies>
+  <dependency>
+      <groupId>com.github.immort-zyliu</groupId>
+      <artifactId>zy-template-excel-spring-boot-starter</artifactId>
+      <version>${zy-template-excel-boot.version}</version>
+  </dependency>
   ```
 
   ​
