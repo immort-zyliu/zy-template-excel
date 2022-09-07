@@ -344,8 +344,6 @@ public void init() {
     * @return 准备要填充的数据
     */
   private Map<String, Object> initParam() {
-
-
       Map<String, Object> res = new HashMap<>();
       ClassScore classScore = new ClassScore();
       res.put("classScore", classScore);
@@ -362,10 +360,9 @@ public void init() {
 
       classScore.setScore(scoreList);
       return res;
-
-
   }
   ```
+
 
 
 
@@ -373,11 +370,15 @@ public void init() {
 
   ![1662355660079](./assets/1662355660079.png)
 
+
+
 #### 3.1.3 使用“填充者”对象填充Excel
 
-调用方法进行填充
+调用方法进行填充  
 
-```java
+  ```java
+
+
 @Test
 public void test() throws IOException, InvalidFormatException {
 
@@ -403,7 +404,7 @@ public void test() throws IOException, InvalidFormatException {
         new File("C:\\Users\\immortal\\Desktop\\05MyScore_functionxxxx.xlsx")
     );
 }
-```
+  ```
 
 
 
@@ -419,11 +420,87 @@ templateExcelFiller.fillData(sheet, param);
 
 ### 3.2 Spring-Boot 整合
 
+- 导入pom
 
+  ```xml
+   <dependencies>
+       <dependency>
+           <groupId>com.github.immort-zyliu</groupId>
+           <artifactId>zy-template-excel-spring-boot-starter</artifactId>
+           <version>${zy-template-excel-boot.version}</version>
+       </dependency>
+  </dependencies>
+  ```
+
+  ​
+
+- 注入使用。
+
+  ```java
+  /**
+    * excel 填充者
+    */
+  @Resource
+  private TemplateExcelFiller templateExcelFiller;
+  ```
+
+  ​
+
+- 可配置表达式缓存容量(application配置文件中)
+
+  ```yaml
+  zy:
+    template:
+      excel:
+        expression-cache-size: 300
+        # 默认就是true。可不配置
+        enable: true
+  ```
+
+  ​
 
 
 
 ### 3.3 Spring整合
+
+- 引入pom
+
+  ```xml
+  <dependency>
+      <groupId>com.github.immort-zyliu</groupId>
+      <artifactId>zy-template-excel</artifactId>
+      <version>${zy-template-excel.version}</version>
+  </dependency>
+  ```
+
+  ​
+
+- 声明bean放入spring的IOC容器中
+
+  ```java
+  @Bean
+  public TemplateExcelFiller templateExcelFiller() {
+      return TemplateExcelFillerFactory.defaultTemplateExcelFillerBuilder()
+          .expressionCacheSize(zyTemplateExcelProperties.getExpressionCacheSize())
+          .build();
+  }
+  ```
+
+  ​
+
+- 直接注入使用
+
+  ​
+
+  ```java
+  /**
+    * excel 填充者
+    */
+  @Resource
+  private TemplateExcelFiller templateExcelFiller;
+  ```
+
+  ​
 
 
 
