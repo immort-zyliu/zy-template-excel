@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pers.lzy.template.excel.common.PatternPool;
 import pers.lzy.template.excel.core.ExpressionCalculator;
+import pers.lzy.template.excel.exception.CalculateException;
 import pers.lzy.template.excel.utils.ReUtils;
 
 import javax.annotation.Nonnull;
@@ -91,7 +92,8 @@ public class Jxel3ExpressionCalculator implements ExpressionCalculator {
                 result = evaluateRes.toString();
             }
         } catch (ExecutionException e) {
-            logger.error("表达式计算失败：", e);
+            logger.error("Description Failed to get an expression from cache:", e);
+            throw new CalculateException("Description Failed to get an expression from cache");
         }
         return result;
     }

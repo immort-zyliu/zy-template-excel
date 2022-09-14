@@ -285,13 +285,13 @@ public class ExcelUtil {
             hw.write(excelFileOutPutStream);
             excelFileOutPutStream.flush();
         } catch (Exception e) {
-            logger.error("excel导出失败", e);
+            logger.error("export error ", e);
         } finally {
             if (excelFileOutPutStream != null) {
                 try {
                     excelFileOutPutStream.close();
                 } catch (Exception e) {
-                    logger.error("excel导出失败", e);
+                    logger.error("export error ", e);
                 }
             }
         }
