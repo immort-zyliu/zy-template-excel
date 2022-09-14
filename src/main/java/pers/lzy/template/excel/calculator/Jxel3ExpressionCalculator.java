@@ -91,7 +91,6 @@ public class Jxel3ExpressionCalculator implements ExpressionCalculator {
                 result = evaluateRes.toString();
             }
         } catch (ExecutionException e) {
-            e.printStackTrace();
             logger.error("表达式计算失败：", e);
         }
         return result;

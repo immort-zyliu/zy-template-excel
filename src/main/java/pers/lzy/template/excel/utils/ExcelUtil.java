@@ -2,6 +2,8 @@ package pers.lzy.template.excel.utils;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +15,8 @@ import java.util.List;
  * @since 2022/2/24  11:10
  */
 public class ExcelUtil {
+
+    private final static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
 
 
     /**
@@ -27,7 +31,6 @@ public class ExcelUtil {
         sheet.addMergedRegion(cellRangeAddress);
         return cellRangeAddress;
     }
-
 
 
     /**
@@ -79,8 +82,9 @@ public class ExcelUtil {
 
     /**
      * 获取指定单元格的值
-     * @param sheet sheet
-     * @param rowNumber 行索引
+     *
+     * @param sheet        sheet
+     * @param rowNumber    行索引
      * @param columnNumber 列索引
      * @return 单元格的值
      */
@@ -180,7 +184,7 @@ public class ExcelUtil {
             try {
                 sheet.addMergedRegion(newCellRangeAddress);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("单元格合并失败", e);
             }
         }*/
     }
@@ -281,13 +285,13 @@ public class ExcelUtil {
             hw.write(excelFileOutPutStream);
             excelFileOutPutStream.flush();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("excel导出失败", e);
         } finally {
             if (excelFileOutPutStream != null) {
                 try {
                     excelFileOutPutStream.close();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("excel导出失败", e);
                 }
             }
         }
