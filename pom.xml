@@ -39,6 +39,7 @@
         <poi.version>4.1.2</poi.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <sl4j.version>1.7.25</sl4j.version>
+        <junit.version>4.13.1</junit.version>
     </properties>
 
 
@@ -96,7 +97,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -123,7 +124,7 @@
                 <version>3.0.2</version>
             </plugin>
 
-            <!--上传源码插件-->
+            <!--源码插件-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -144,7 +145,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.0</version>
             </plugin>
         </plugins>
     </build>
