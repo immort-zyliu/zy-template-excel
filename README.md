@@ -434,7 +434,7 @@ templateExcelFiller.fillData(sheet, param);
 
   ```xml
   <dependency>
-      <groupId>com.github.immort-zyliu</groupId>
+      <groupId>io.github.immort-zyliu</groupId>
       <artifactId>zy-template-excel-spring-boot-starter</artifactId>
       <version>${zy-template-excel-boot.version}</version>
   </dependency>
@@ -475,7 +475,7 @@ templateExcelFiller.fillData(sheet, param);
 
   ```xml
   <dependency>
-      <groupId>com.github.immort-zyliu</groupId>
+      <groupId>io.github.immort-zyliu</groupId>
       <artifactId>zy-template-excel</artifactId>
       <version>${zy-template-excel.version}</version>
   </dependency>
