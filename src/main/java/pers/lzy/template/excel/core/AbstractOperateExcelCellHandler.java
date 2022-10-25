@@ -3,7 +3,9 @@ package pers.lzy.template.excel.core;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
+import pers.lzy.template.excel.anno.CellOperateHandler;
 import pers.lzy.template.excel.common.TagParser;
+import pers.lzy.template.excel.exception.OperateExcelCellHandlerInitException;
 
 import java.util.Map;
 
@@ -15,6 +17,21 @@ import java.util.Map;
 public abstract class AbstractOperateExcelCellHandler implements OperateExcelCellHandler {
 
     /**
+     * 当前 handler 所处理的标签
+     */
+    protected final String tagName;
+
+    public AbstractOperateExcelCellHandler() {
+
+        CellOperateHandler cellOperateHandler = this.getClass().getAnnotation(CellOperateHandler.class);
+        if (cellOperateHandler == null) {
+            throw new OperateExcelCellHandlerInitException("The OperateExcelCellHandler must identify the CellOperateHandler annotation");
+        }
+
+        tagName = cellOperateHandler.tagName();
+    }
+
+    /**
      * 对Excel进行个性化处理的方法
      *
      * @param sheet                要操作的sheet
@@ -24,7 +41,7 @@ public abstract class AbstractOperateExcelCellHandler implements OperateExcelCel
      */
     @Override
     public void operate(Sheet sheet, Cell cell, Map<String, Object> params, ExpressionCalculator expressionCalculator) {
-        String expression = TagParser.parseCellTagContent(cell, determineTagName());
+        String expression = TagParser.parseCellTagContent(cell, tagName);
         // 说明没有解析出来表达式，不需要本handler处理。
         if (StringUtils.isBlank(expression)) {
             return;
@@ -44,12 +61,5 @@ public abstract class AbstractOperateExcelCellHandler implements OperateExcelCel
      * @param expressionCalculator 表达式计算器
      */
     protected abstract void doOperate(Sheet sheet, Cell cell, Map<String, Object> params, String expressionStr, ExpressionCalculator expressionCalculator);
-
-    /**
-     * 确定子类实现的标签
-     *
-     * @return 标签名称
-     */
-    protected abstract String determineTagName();
 
 }

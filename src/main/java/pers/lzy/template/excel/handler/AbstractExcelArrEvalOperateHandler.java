@@ -75,7 +75,7 @@ public abstract class AbstractExcelArrEvalOperateHandler extends AbstractOperate
     private void saveMargeArrInfoIfNecessary(ArrInfo arrInfo, Cell cell, Map<String, Object> params) {
 
         // 获取当前标签的名称，用来判断是否需要进行 记录。
-        String currentTagName = this.determineTagName();
+        String currentTagName = super.tagName;
 
         // 如果不是 arr-merge 标签，则不做处理，不做记录。
         if (!TagNameConstant.ARR_MERGE_TAG_NAME.equals(currentTagName)) {

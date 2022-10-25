@@ -77,6 +77,28 @@ public class ReUtils {
         return collection;
     }
 
+    /**
+     * 取得内容中匹配的所有结果
+     *
+     * @param pattern 编译后的正则模式
+     * @param content 被查找的内容
+     * @param group   正则的分组
+     * @return 结果集
+     */
+    public static List<String> findAll(Pattern pattern, CharSequence content, int group) {
+        if (null == pattern || null == content) {
+            return null;
+        }
+
+        List<String> res = new ArrayList<>();
+
+        final Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            res.add(matcher.group(group));
+        }
+        return res;
+    }
+
 
     /**
      * 获得匹配的字符串

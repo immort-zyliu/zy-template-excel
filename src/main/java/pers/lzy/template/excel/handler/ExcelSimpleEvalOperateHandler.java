@@ -3,6 +3,7 @@ package pers.lzy.template.excel.handler;
 import com.google.auto.service.AutoService;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
+import pers.lzy.template.excel.anno.CellOperateHandler;
 import pers.lzy.template.excel.anno.HandlerOrder;
 import pers.lzy.template.excel.constant.TagNameConstant;
 import pers.lzy.template.excel.core.AbstractOperateExcelCellHandler;
@@ -17,6 +18,7 @@ import java.util.Map;
  * 处理 simple 标签的 handler
  */
 @HandlerOrder(10000)
+@CellOperateHandler(tagName = TagNameConstant.SIMPLE_TAG_NAME)
 @AutoService(OperateExcelCellHandler.class)
 public class ExcelSimpleEvalOperateHandler extends AbstractOperateExcelCellHandler {
 
@@ -38,14 +40,5 @@ public class ExcelSimpleEvalOperateHandler extends AbstractOperateExcelCellHandl
         cell.setCellValue(result);
     }
 
-    /**
-     * 确定子类实现的标签
-     *
-     * @return 标签名称
-     */
-    @Override
-    protected String determineTagName() {
-        return TagNameConstant.SIMPLE_TAG_NAME;
-    }
 
 }

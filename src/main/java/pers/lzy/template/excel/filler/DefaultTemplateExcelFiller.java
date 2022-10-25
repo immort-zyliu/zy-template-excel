@@ -3,12 +3,16 @@ package pers.lzy.template.excel.filler;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.JxltEngine;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pers.lzy.template.excel.anno.CellOperateHandler;
 import pers.lzy.template.excel.calculator.Jxel3ExpressionCalculator;
+import pers.lzy.template.excel.common.TagParser;
 import pers.lzy.template.excel.constant.CommonDataNameConstant;
 import pers.lzy.template.excel.core.*;
+import pers.lzy.template.excel.exception.OperateExcelCellHandlerInitException;
 import pers.lzy.template.excel.pojo.ArrInfo;
 import pers.lzy.template.excel.pojo.MergeArrInfo;
 import pers.lzy.template.excel.provider.FillDataProvider;
@@ -16,6 +20,7 @@ import pers.lzy.template.excel.provider.SheetProvider;
 import pers.lzy.template.excel.utils.SpiLoader;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author immort-liuzyj(zyliu)
@@ -40,6 +45,17 @@ public class DefaultTemplateExcelFiller implements TemplateExcelFiller {
      */
     private final List<OperateExcelPostProcessor> operateExcelPostProcessorList;
 
+    /**
+     * key: cell-handler's tagName
+     * value: OperateExcelCellHandler
+     */
+    private final Map<String, OperateExcelCellHandler> operateExcelCellHandlerTagMap;
+
+    /**
+     * cell handler 解析之后的 holder 对象列表
+     */
+    private final List<OperateExcelCellHandlerHolder> operateExcelCellHandlerHolders;
+
 
     public DefaultTemplateExcelFiller(Builder builder) {
         this.operateExcelCellHandlerList = builder.operateExcelCellHandlerList;
@@ -52,6 +68,9 @@ public class DefaultTemplateExcelFiller implements TemplateExcelFiller {
         } else {
             this.expressionCalculator = new Jxel3ExpressionCalculator(builder.jxltEngine, expressionCacheSize);
         }
+
+        this.operateExcelCellHandlerTagMap = builder.operateExcelCellHandlerTagMap;
+        this.operateExcelCellHandlerHolders = builder.operateExcelCellHandlerHolders;
     }
 
     @Override
@@ -69,13 +88,32 @@ public class DefaultTemplateExcelFiller implements TemplateExcelFiller {
             Optional.ofNullable(sheet.getRow(rowNum)).ifPresent(curRow -> {
                 for (int colNum = 0; colNum < curRow.getLastCellNum(); colNum++) {
                     Optional.ofNullable(curRow.getCell(colNum)).ifPresent(curCell ->
-                            // 给cell 应用处理
-                            this.operateExcelCellHandlerList.forEach(handler -> handler.operate(sheet, curCell, paramData, this.expressionCalculator)));
+                            this.doFillCell(sheet, curCell, paramData)
+                    );
                 }
             });
         }
         // 执行 所有的 Excel 的后置处理
         this.operateExcelPostProcessorList.forEach(processor -> processor.operatePostProcess(sheet, paramData, this.expressionCalculator));
+    }
+
+    private void doFillCell(Sheet sheet, Cell curCell, Map<String, Object> paramData) {
+        // 解析tag
+        String tagName = TagParser.findFirstTag(curCell);
+
+        if (tagName == null) {
+            return;
+        }
+
+        // 通过tag找到handler
+        OperateExcelCellHandler operateExcelCellHandler = operateExcelCellHandlerTagMap.get(tagName);
+        if (operateExcelCellHandler == null) {
+            logger.warn("No tag({}) handler found, skipped", tagName);
+            return;
+        }
+
+        // 调用handler对cell进行处理
+        operateExcelCellHandler.operate(sheet, curCell, paramData, this.expressionCalculator);
     }
 
     /**
@@ -106,11 +144,24 @@ public class DefaultTemplateExcelFiller implements TemplateExcelFiller {
     public static class Builder {
 
         private final JxltEngine jxltEngine;
+
         private final Map<String, Object> functions;
+
         private int expressionCacheSize = 1000;
+
         private List<OperateExcelCellHandler> operateExcelCellHandlerList;
+
         private List<OperateExcelPostProcessor> operateExcelPostProcessorList;
+
         private ExpressionCalculator expressionCalculator;
+
+        /**
+         * key: cell-handler's tagName
+         * value: OperateExcelCellHandler
+         */
+        private Map<String, OperateExcelCellHandler> operateExcelCellHandlerTagMap;
+
+        private List<OperateExcelCellHandlerHolder> operateExcelCellHandlerHolders;
 
         public Builder() {
             functions = new HashMap<>();
@@ -122,9 +173,42 @@ public class DefaultTemplateExcelFiller implements TemplateExcelFiller {
             jxltEngine = jexlEngine.createJxltEngine();
             this.operateExcelCellHandlerList = this.loadInstanceByInterface(OperateExcelCellHandler.class);
             this.operateExcelPostProcessorList = this.loadInstanceByInterface(OperateExcelPostProcessor.class);
-
+            // 初始化辅助handler或者是map的信息
+            this.initAuxiliaryInfo();
 
         }
+
+        private void initAuxiliaryInfo() {
+            this.initOperateExcelCellHandlerHolders();
+            this.initOperateExcelCellHandlerTagMap();
+        }
+
+        private void initOperateExcelCellHandlerHolders() {
+            logger.info("init operateExcelCellHandlerTagMap");
+            this.operateExcelCellHandlerHolders = this.operateExcelCellHandlerList.stream()
+                    .map(cellHandler -> {
+                        CellOperateHandler cellOperateHandler = cellHandler.getClass().getAnnotation(CellOperateHandler.class);
+                        if (cellOperateHandler == null) {
+                            throw new OperateExcelCellHandlerInitException("The OperateExcelCellHandler must identify the CellOperateHandler annotation");
+                        }
+                        return new OperateExcelCellHandlerHolder(cellHandler, cellOperateHandler.tagName());
+
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        private void initOperateExcelCellHandlerTagMap() {
+            logger.info("init operateExcelCellHandlerHolders");
+            this.operateExcelCellHandlerTagMap = this.operateExcelCellHandlerHolders.stream()
+                    .collect(Collectors.toConcurrentMap(
+                            OperateExcelCellHandlerHolder::getCellHandlerTagName,
+                            OperateExcelCellHandlerHolder::getOperateExcelCellHandler,
+                            (oldV, newV) -> {
+                                throw new OperateExcelCellHandlerInitException("There are multiple OperateExcelCellHandler with the same tagName. cell:" + oldV + ";" + newV);
+                            }
+                    ));
+        }
+
 
         private Map<String, Object> loadFunctions() {
             List<FunctionProvider> functionProviders = this.loadInstanceByInterface(FunctionProvider.class);
@@ -178,6 +262,7 @@ public class DefaultTemplateExcelFiller implements TemplateExcelFiller {
          */
         public Builder resetOperateExcelHandlerList(List<OperateExcelCellHandler> operateExcelCellHandlerList) {
             this.operateExcelCellHandlerList = operateExcelCellHandlerList;
+            this.initAuxiliaryInfo();
             return this;
         }
 
