@@ -7,7 +7,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -79,6 +83,34 @@ public class ExcelUtil {
 
 
     }
+
+    /**
+     * 设置单元格的值
+     *
+     * @param value 被设置的值，可以是任何类型
+     * @param cell  被设置的单元格
+     */
+    public static void setCellValue(Cell cell, Object value) {
+
+        if (value instanceof String) {
+            cell.setCellValue((String) value);
+        } else if (value instanceof Double) {
+            cell.setCellValue((Double) value);
+        } else if (value instanceof Date) {
+            cell.setCellValue((Date) value);
+        } else if (value instanceof LocalDateTime) {
+            cell.setCellValue((LocalDateTime) value);
+        } else if (value instanceof LocalDate) {
+            cell.setCellValue((LocalDate) value);
+        } else if (value instanceof Calendar) {
+            cell.setCellValue((Calendar) value);
+        } else if (value instanceof RichTextString) {
+            cell.setCellValue((RichTextString) value);
+        } else {
+            cell.setCellValue((String) null);
+        }
+    }
+
 
     /**
      * 获取指定单元格的值
@@ -244,6 +276,28 @@ public class ExcelUtil {
             cell = sheet.getRow(rowNum).createCell(colNum);
         }
         cell.setCellValue(val);
+        if (style == null && colNum > 0) {
+            Cell preCell = sheet.getRow(rowNum).getCell(colNum - 1);
+            if (preCell != null) {
+                style = preCell.getCellStyle();
+            }
+        }
+        cell.setCellStyle(style);
+    }
+
+    /**
+     * 设置单元格内容。单元格为空时自动创建
+     */
+    public static void setCellObjValue(Sheet sheet, int rowNum, int colNum, Object val, CellStyle style) {
+        Row row = sheet.getRow(rowNum);
+        if (row == null) {
+            row = sheet.createRow(rowNum);
+        }
+        Cell cell = row.getCell(colNum);
+        if (cell == null) {
+            cell = sheet.getRow(rowNum).createCell(colNum);
+        }
+        setCellValue(cell, val);
         if (style == null && colNum > 0) {
             Cell preCell = sheet.getRow(rowNum).getCell(colNum - 1);
             if (preCell != null) {

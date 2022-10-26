@@ -3,7 +3,6 @@ package pers.lzy.template.excel.handler;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import pers.lzy.template.excel.constant.CommonDataNameConstant;
-import pers.lzy.template.excel.constant.TagNameConstant;
 import pers.lzy.template.excel.core.AbstractOperateExcelCellHandler;
 import pers.lzy.template.excel.core.ExpressionCalculator;
 import pers.lzy.template.excel.pojo.ArrInfo;
@@ -74,11 +73,8 @@ public abstract class AbstractExcelArrEvalOperateHandler extends AbstractOperate
      */
     private void saveMargeArrInfoIfNecessary(ArrInfo arrInfo, Cell cell, Map<String, Object> params) {
 
-        // 获取当前标签的名称，用来判断是否需要进行 记录。
-        String currentTagName = super.tagName;
-
-        // 如果不是 arr-merge 标签，则不做处理，不做记录。
-        if (!TagNameConstant.ARR_MERGE_TAG_NAME.equals(currentTagName)) {
+        // 决定是否需要合并arr 单元格
+        if (!mergeArrCell()) {
             return;
         }
 
@@ -87,12 +83,19 @@ public abstract class AbstractExcelArrEvalOperateHandler extends AbstractOperate
         List<MergeArrInfo> mergeArrInfoList = (List<MergeArrInfo>) params.get(CommonDataNameConstant.MERGE_ARR_INFO);
 
         mergeArrInfoList.add(new MergeArrInfo(
-                        arrInfo.getStartRow(),
-                        arrInfo.getStartRow() + arrInfo.getSize(),
-                        cell.getColumnIndex()
-                ));
+                arrInfo.getStartRow(),
+                arrInfo.getStartRow() + arrInfo.getSize(),
+                cell.getColumnIndex()
+        ));
 
     }
+
+    /**
+     * 是否需要合并相同单元格
+     *
+     * @return true:合并，false不合并
+     */
+    protected abstract boolean mergeArrCell();
 
     private int determineTraverseNumber(int traverseNumber, ArrInfo arrInfo) {
         // 确定第一次
@@ -135,9 +138,10 @@ public abstract class AbstractExcelArrEvalOperateHandler extends AbstractOperate
             // 将expressionStr中的[] 中填充数字，方便取出数据
             String realExpressionStr = expressionStr.replaceAll("\\[]", String.format("[%d]", index));
             // 说明需要处理, 计算表达式并赋值。
-            String realValue = expressionCalculator.calculate(realExpressionStr, params);
+            Object realValue = expressionCalculator.calculateNoFormat(realExpressionStr, params);
+            realValue = this.formatCellValue(realValue);
             // 替换到单元格中
-            ExcelUtil.setCellValue(sheet,
+            ExcelUtil.setCellObjValue(sheet,
                     arrInfo.getStartRow() + index,
                     cell.getColumnIndex(),
                     realValue,
@@ -156,6 +160,16 @@ public abstract class AbstractExcelArrEvalOperateHandler extends AbstractOperate
             // 还有一个条件，就是这是再插入arrMerge标签的时候
             ExcelUtil.mergeLeft(sheet, cell, arrInfo.getSize() - 1);
         }
+    }
+
+    /**
+     * 格式化 计算出来两单元格的值,子类可以重写更改
+     *
+     * @param realValue 计算出来的值
+     * @return 格式化后的值
+     */
+    protected Object formatCellValue(Object realValue) {
+        return realValue;
     }
 
 }

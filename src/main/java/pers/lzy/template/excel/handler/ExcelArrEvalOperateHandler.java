@@ -14,4 +14,13 @@ import pers.lzy.template.excel.core.OperateExcelCellHandler;
 @CellOperateHandler(tagName = TagNameConstant.ARR_TAG_NAME)
 @AutoService(OperateExcelCellHandler.class)
 public class ExcelArrEvalOperateHandler extends AbstractExcelArrEvalOperateHandler {
+    /**
+     * 是否需要合并相同单元格
+     *
+     * @return true:合并，false不合并
+     */
+    @Override
+    protected boolean mergeArrCell() {
+        return false;
+    }
 }

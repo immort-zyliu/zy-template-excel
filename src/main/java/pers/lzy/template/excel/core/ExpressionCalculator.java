@@ -20,6 +20,15 @@ public interface ExpressionCalculator {
     String calculate(String expression, Map<String, Object> calculateParam);
 
     /**
+     * 计算表达式。
+     *
+     * @param expression     表达式
+     * @param calculateParam 计算所需要的参数
+     * @return 计算后的结果
+     */
+    Object calculateNoFormat(String expression, Map<String, Object> calculateParam);
+
+    /**
      * 解析参数中的第一个数组，并返回此数组
      *
      * @param expressionStr  表达式字符串

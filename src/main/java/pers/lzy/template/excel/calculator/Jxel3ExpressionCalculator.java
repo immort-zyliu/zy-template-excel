@@ -99,6 +99,29 @@ public class Jxel3ExpressionCalculator implements ExpressionCalculator {
     }
 
     /**
+     * 计算表达式。
+     *
+     * @param expressionStr  表达式
+     * @param calculateParam 计算所需要的参数
+     * @return 计算后的结果
+     */
+    @Override
+    public Object calculateNoFormat(String expressionStr, Map<String, Object> calculateParam) {
+        // 获取参数
+        // 进行表达式计算。
+        Object evaluateRes;
+        try {
+            // 获取表达式，计算返回。
+            JxltEngine.Expression expression = READ_WRITE_CACHE_MAP.get(expressionStr);
+            evaluateRes = expression.evaluate(new MapContext(calculateParam));
+        } catch (ExecutionException e) {
+            logger.error("Description Failed to get an expression from cache:", e);
+            throw new CalculateException("Description Failed to get an expression from cache");
+        }
+        return evaluateRes;
+    }
+
+    /**
      * 返回参数中最短的那个数组
      *
      * @param expressionStr  表达式字符串

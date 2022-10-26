@@ -12,6 +12,8 @@ import pers.lzy.template.excel.core.OperateExcelCellHandler;
 
 import java.util.Map;
 
+import static pers.lzy.template.excel.utils.ExcelUtil.setCellValue;
+
 /**
  * @author immort-liuzyj(zyliu)
  * @since 2022/2/23  18:12
@@ -35,10 +37,18 @@ public class ExcelSimpleEvalOperateHandler extends AbstractOperateExcelCellHandl
     @Override
     protected void doOperate(Sheet sheet, Cell cell, Map<String, Object> params, String expressionStr, ExpressionCalculator expressionCalculator) {
         // 说明需要处理, 计算表达式并赋值。
-        String result = expressionCalculator.calculate(expressionStr, params);
+        Object result = expressionCalculator.calculateNoFormat(expressionStr, params);
         // 设置到单元格中
-        cell.setCellValue(result);
+        setCellValue(cell, this.formatCellValue(result));
     }
 
-
+    /**
+     * 格式化 计算出来两单元格的值,子类可以重写更改
+     *
+     * @param realValue 计算出来的值
+     * @return 格式化后的值
+     */
+    protected Object formatCellValue(Object realValue) {
+        return realValue;
+    }
 }
