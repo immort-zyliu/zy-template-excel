@@ -580,7 +580,18 @@ templateExcelFiller.fillData(sheet, param);
 
 
 
+## 4. 项目扩展:2.x 版本
+
+> 由于在2.x版本中对 `OperateExcelCellHandler` 的找寻机制做了更新，所以扩展方法也相应做了调整。
+
+在 4.1.1.1 节的基础之上，打上`@CellOperateHandler`注解即可(注解中需要指明此handler所处理的标签的名称)。如图所示：
+
+![1666848095294](./assets/1666848095294.png)
+
+
+
 ## 5.联系我
+
 - `email`:  **zyliu99@foxmail.com**
 
 
