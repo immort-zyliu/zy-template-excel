@@ -106,8 +106,16 @@ public class ExcelUtil {
             cell.setCellValue((Calendar) value);
         } else if (value instanceof RichTextString) {
             cell.setCellValue((RichTextString) value);
+        } else if (value instanceof Integer) {
+            cell.setCellValue(Double.parseDouble(String.valueOf(value)));
+        } else if (value instanceof Long) {
+            cell.setCellValue(Double.parseDouble(String.valueOf(value)));
         } else {
-            cell.setCellValue((String) null);
+            if (value == null) {
+                cell.setCellValue((String) null);
+            } else {
+                cell.setCellValue(value.toString());
+            }
         }
     }
 
