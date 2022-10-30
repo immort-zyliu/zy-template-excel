@@ -140,6 +140,11 @@ public class ExcelUtil {
      * @param rows    插入多少行
      */
     public static void insertRowAndCopyStyle(Sheet sheet, int starRow, int rows) {
+        if (rows <= 0) {
+            logger.warn("The number of rows to insert is less than or equal to 0");
+            return;
+        }
+
         //复制单元格格式
         if (starRow + 1 <= sheet.getLastRowNum()) {
             sheet.shiftRows(starRow + 1, sheet.getLastRowNum(), rows, true, false);

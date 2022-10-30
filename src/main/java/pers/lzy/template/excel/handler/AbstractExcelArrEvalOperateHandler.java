@@ -133,13 +133,35 @@ public abstract class AbstractExcelArrEvalOperateHandler extends AbstractOperate
      * @param expressionCalculator 表达式计算器
      */
     private void fillArrDataToSheet(Sheet sheet, Cell cell, int traverseNumber, ArrInfo arrInfo, Map<String, Object> params, String expressionStr, ExpressionCalculator expressionCalculator) {
+
+        boolean blankFlag = false;
+
+        if (traverseNumber <= 0) {
+            // 此时就说明没有数组数据，或者是数组元素个数为0
+            // 我们就要设置 空 flag 为true; 同时让其遍历一次，使其将当前单元格制空（因为没有值嘛）
+            traverseNumber ++;
+            blankFlag = true;
+        }
+
+
+
         for (int index = 0; index < traverseNumber; index++) {
 
-            // 将expressionStr中的[] 中填充数字，方便取出数据
-            String realExpressionStr = expressionStr.replaceAll("\\[]", String.format("[%d]", index));
-            // 说明需要处理, 计算表达式并赋值。
-            Object realValue = expressionCalculator.calculateNoFormat(realExpressionStr, params);
+            // 默认为空
+            Object realValue = null;
+
+            // 说明此时填充的数组是有的，同时也是有元素的，
+            // 所以我们就计算即可。
+            if (!blankFlag) {
+                // 将expressionStr中的[] 中填充数字，方便取出数据
+                String realExpressionStr = expressionStr.replaceAll("\\[]", String.format("[%d]", index));
+                // 说明需要处理, 计算表达式并赋值。
+                realValue = expressionCalculator.calculateNoFormat(realExpressionStr, params);
+
+            }
+
             realValue = this.formatCellValue(realValue);
+
             // 替换到单元格中
             ExcelUtil.setCellObjValue(sheet,
                     arrInfo.getStartRow() + index,
