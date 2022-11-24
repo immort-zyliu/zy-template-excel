@@ -238,6 +238,10 @@ public class ExcelUtil {
      * 合并左侧的单元格，如资金详细信息左侧有个合并的资金信息的标题
      */
     public static void mergeLeft(Sheet sheet, Cell cell, int size) {
+        if (size < 0) {
+            logger.warn("Merged region must contain 2 or more cells, so not operate;size:{}", size);
+            return;
+        }
 
         int curRow = cell.getRowIndex();
         int curCol = cell.getColumnIndex();
